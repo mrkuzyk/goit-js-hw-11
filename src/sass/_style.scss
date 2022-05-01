@@ -1,0 +1,35 @@
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.photo-card {
+    align-items: center;
+    width: 320px;
+    padding: 1px;
+    background-color: rgb(231, 230, 230);
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 0 10px 0 10px;
+}
+
+.info-item {
+    width: auto;
+}
+
+.load-more {
+    visibility: hidden;
+}
