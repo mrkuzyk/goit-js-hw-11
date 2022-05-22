@@ -3,6 +3,7 @@ import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 import './sass/main.scss';
 import PhotoApiService from './js/photo-service';
+import markupPhoto from './js/markupPhoto';
 
 const refs = {
     serchForm: document.querySelector('.search-form'),
@@ -15,28 +16,66 @@ const photoApiService = new PhotoApiService();
 refs.serchForm.addEventListener('submit', onSearch);
 refs.loadMoreBtn.addEventListener('click', onLOadMore)
 
-function markupPhoto(hits, hitsContainer) {
-    const markup = hits.map(({ webformatURL, tags, likes, views, comments, downloads }) => {
-        return '<div class="photo-card "><img src=`${webformatURL}` alt=`${tags}`loading="lazy" /><div class="info"><p class="info-item"><b>Likes</b>${ likes}</p><p class="info-item"><b>Views</b>${ views}</p><p class="info-item"><b>Comments</b>${ comments}</p><p class="info-item"><b>Downloads</b>${ downloads}</p></div></div>'
-    }).join('');
-
-    refs.hitsContainer.insertAdjacentElement('beforeend', markup);
+const lightboxOptions = {
+    captions: true,
+    captionDelay: 300,
+    captionsData: "alt",
 };
 
+const galleryLightBox = new SimpleLightbox('.gallery a', lightboxOptions);
 
 function onSearch(e) {
     e.preventDefault();
 
     photoApiService.query = e.currentTarget.elements.searchQuery.value;
+
+    if (!photoApiService.query) {
+        return onError();
+    }
+
     photoApiService.resetPage()
-    photoApiService.fetchArticles().then(markupPhoto(hits, refs.hitsContainer))
-        // markupPhoto(data.hits, refs.hitsContainer)
-    // })
+    refs.hitsContainer.innerHTML = '';
+    photoApiService.fetchArticles().then(data => {
+        
+        if (data.totalHits !== 0 && data.hits.length === 0) {
+            return Notiflix.Notify.warning(`We're sorry, but you've reached the end of search results.`);
+        }
+        refs.hitsContainer.insertAdjacentHTML('beforeend', markupPhoto(data.hits));
+
+        galleryLightBox.refresh();
+
+        if (data.totalHits > 0 && photoApiService.page === 2) {
+            Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+        }
+
+        if (photoApiService.page > 2) {
+            const { height: cardHeight } = document
+            .querySelector('.gallery')
+            .firstElementChild.getBoundingClientRect();
+
+            window.scrollBy({
+            top: cardHeight * 2,
+            behavior: 'smooth',
+            });
+        }
+
+        if (data.hits.length === 0) {
+            // loadMoreBtn.hide();
+            return onError();
+        }
+            return console.log(data);
+            return data;
+    });
+    
 }
 
 function onLOadMore() {
     photoApiService.fetchArticles();
 }
+
+function onError() {
+    return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again');
+};
 
 
 
