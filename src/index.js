@@ -13,6 +13,9 @@ const refs = {
 
 const photoApiService = new PhotoApiService();
 
+refs.loadMoreBtn.classList.add('display-none');
+refs.hitsContainer.innerHTML = startPage();
+
 refs.serchForm.addEventListener('submit', onSearch);
 refs.loadMoreBtn.addEventListener('click', onLOadMore)
 
@@ -36,11 +39,13 @@ function onSearch(e) {
     photoApiService.resetPage()
     refs.hitsContainer.innerHTML = '';
     photoApiService.fetchArticles().then(data => {
-        
+
         if (data.totalHits !== 0 && data.hits.length === 0) {
             return Notiflix.Notify.warning(`We're sorry, but you've reached the end of search results.`);
         }
         refs.hitsContainer.insertAdjacentHTML('beforeend', markupPhoto(data.hits));
+
+        refs.loadMoreBtn.classList.remove('display-none');
 
         galleryLightBox.refresh();
 
@@ -60,7 +65,6 @@ function onSearch(e) {
         }
 
         if (data.hits.length === 0) {
-            // loadMoreBtn.hide();
             return onError();
         }
             return console.log(data);
@@ -70,12 +74,23 @@ function onSearch(e) {
 }
 
 function onLOadMore() {
-    photoApiService.fetchArticles();
+    photoApiService.fetchArticles().then(data => {
+        if (data.totalHits !== 0 && data.hits.length === 0) {
+            refs.loadMoreBtn.classList.add('display-none');
+            return Notiflix.Notify.warning(`We're sorry, but you've reached the end of search results.`);
+        }
+        refs.hitsContainer.insertAdjacentHTML('beforeend', markupPhoto(data.hits));
+        }
+    );
 }
 
 function onError() {
+    refs.loadMoreBtn.classList.add('display-none');
     return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again');
 };
 
+function startPage() {
+    return '<h2 class="start"> please start searching</h2>'
+}
 
 

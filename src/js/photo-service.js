@@ -14,7 +14,7 @@ export default class PhotoApiService{
                 image_type: 'photo',
                 orientation: 'horizontal',
                 safesearch: true,
-                per_page: 40,
+                per_page: 10,
                 page: this.page,
             },
         };

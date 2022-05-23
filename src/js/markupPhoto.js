@@ -7,16 +7,16 @@ export default function markupPhoto(data) {
         </a>
         <div class="info">
         <p class="info-item">
-            <b>Likes: ${likes}</b>
+            <b class="name-data">Likes:<span class="data"> ${likes}<span></b>
         </p>
         <p class="info-item">
-            <b>Views: ${views}</b>
+            <b class="name-data">Views:<span class="data"> ${views}<span></b>
         </p>
         <p class="info-item">
-            <b>Comments: ${comments}</b>
+            <b class="name-data">Comments:<span class="data"> ${comments}<span></b>
         </p>
         <p class="info-item">
-            <b>Downloads: ${downloads}</b>
+            <b class="name-data">Downloads:<span class="data"> ${downloads}<span></b>
         </p>
         </div>
     </div>`;
